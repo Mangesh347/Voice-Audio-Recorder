@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fenwick Recorder — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main class="options-shell">
+    <header class="options-header">
+      <div class="options-brand">
+        <span class="options-logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path class="logo-mic" d="M32 8c-7.5 0-12.5 5-12.5 12.7v12.1c0 7.7 5 12.7 12.5 12.7s12.5-5 12.5-12.7V20.7C44.5 13 39.5 8 32 8Z" />
+            <path class="logo-cutout" d="M27 17h3v19h-3zm7-3h3v25h-3z" />
+            <path class="logo-mic" d="M14 31.5a2.5 2.5 0 0 1 5 0c0 8.5 5.4 13.5 13 13.5s13-5 13-13.5a2.5 2.5 0 0 1 5 0c0 10-6 16.8-15.5 18.3V53H42a2.5 2.5 0 0 1 0 5H22a2.5 2.5 0 0 1 0-5h7.5v-3.2C20 48.3 14 41.5 14 31.5Z" />
+            <path class="logo-bolt" d="m7 22 8-4-2 5 5 1-9 4 2-5-4-1Zm50 0-8-4 2 5-5 1 9 4-2-5 4-1Z" />
+          </svg>
+        </span>
+        <div>
+          <h1>Fenwick Recorder</h1>
+          <p>Private Local Audio</p>
+        </div>
+      </div>
+      <span id="accountPlanBadge" class="plan-badge">Free</span>
+    </header>
+
+    <p id="configNotice" class="notice hidden" role="status">
+      Add your public Supabase URL and anon key in <code>supabase-config.js</code> to enable login and Lifetime verification.
+    </p>
+
+    <nav class="section-tabs" aria-label="Settings sections">
+      <button class="section-tab is-active" type="button" data-section="profile">Profile</button>
+      <button class="section-tab" type="button" data-section="settings">Settings</button>
+    </nav>
+
+    <section id="profileSection" class="options-section" aria-labelledby="profileTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">ACCOUNT</p>
+          <h2 id="profileTitle">Profile &amp; Lifetime</h2>
+        </div>
+        <button id="refreshPlanBtn" class="button button--quiet hidden" type="button">Refresh plan</button>
+      </div>
+
+      <div id="signedOutView" class="account-card">
+        <h3>Sign in to restore Lifetime</h3>
+        <p>Free recording works without an account. Sign in only to purchase or restore unlimited recording.</p>
+        <button id="googleSignInBtn" class="button button--primary" type="button">Continue with Google</button>
+        <div class="divider"><span>or use email</span></div>
+        <form id="emailForm">
+          <label for="emailInput">Email address</label>
+          <div class="input-row">
+            <input id="emailInput" type="email" autocomplete="email" required placeholder="you@example.com" />
+            <button id="sendCodeBtn" class="button button--secondary" type="submit">Send code</button>
+          </div>
+        </form>
+        <form id="codeForm" class="hidden">
+          <label for="codeInput">Verification code</label>
+          <div class="input-row">
+            <input id="codeInput" inputmode="numeric" autocomplete="one-time-code" required maxlength="8" placeholder="Enter code" />
+            <button class="button button--secondary" type="submit">Verify</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="signedInView" class="account-card hidden">
+        <div class="identity-row">
+          <span id="avatar" class="avatar" aria-hidden="true">F</span>
+          <div>
+            <h3 id="accountName">Fenwick user</h3>
+            <p id="accountEmail"></p>
+          </div>
+          <button id="signOutBtn" class="button button--quiet" type="button">Sign out</button>
+        </div>
+      </div>
+
+      <article class="lifetime-card">
+        <div>
+          <p class="eyebrow">ONE-TIME PURCHASE</p>
+          <h3>Lifetime unlimited recording</h3>
+          <p>Record without the ten-per-month Free limit. Taxes are included.</p>
+        </div>
+        <div class="price"><strong>$20</strong><span>USD · once</span></div>
+        <div id="checkoutActions" class="checkout-actions">
+          <button id="paypalBtn" class="button button--paypal" type="button">Pay with PayPal</button>
+          <button id="razorpayBtn" class="button button--secondary" type="button">Pay with Razorpay</button>
+        </div>
+        <p id="lifetimeActive" class="success-message hidden">Lifetime is active on this account.</p>
+      </article>
+    </section>
+
+    <section id="settingsSection" class="options-section hidden" aria-labelledby="settingsTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LOCAL RECORDER</p>
+          <h2 id="settingsTitle">Settings</h2>
+        </div>
+      </div>
+      <article class="settings-card">
+        <div class="setting-row">
+          <div>
+            <h3>Monthly usage</h3>
+            <p id="monthlyUsage">0 of 5 recordings used this month</p>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h3>Private by design</h3>
+            <p>Recordings are downloaded locally. Fenwick never uploads your audio.</p>
+          </div>
+          <span class="privacy-pill">Local only</span>
+        </div>
+      </article>
+    </section>
+
+    <p id="optionsStatus" class="status-message" role="status" aria-live="polite"></p>
+  </main>
+
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

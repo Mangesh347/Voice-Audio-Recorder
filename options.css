@@ -1,0 +1,343 @@
+:root {
+  color-scheme: light;
+  --ink: #1A1A1A;
+  --muted: #71809f;
+  --blue: #1D8BE7;
+  --violet: #1D8BE7;
+  --panel: rgba(255, 255, 255, 0.82);
+  --line: rgba(74, 99, 157, 0.14);
+  --focus: #1D8BE7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(245, 102, 0, 0.28), transparent 28%),
+    radial-gradient(circle at 100% 8%, rgba(29, 139, 231, 0.25), transparent 32%),
+    #f3f8ff;
+  color: var(--ink);
+  font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+
+button,
+input { font: inherit; }
+
+.options-shell {
+  width: min(760px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 40px 0 64px;
+}
+
+.options-header,
+.options-brand,
+.section-heading,
+.identity-row,
+.input-row,
+.checkout-actions,
+.setting-row {
+  display: flex;
+  align-items: center;
+}
+
+.options-header {
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.options-brand { gap: 12px; }
+
+.options-logo {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 15px;
+  background: #1A1A1A;
+  box-shadow: 0 12px 26px rgba(245, 102, 0, 0.24);
+}
+
+.options-logo span {
+  width: 19px;
+  height: 19px;
+  border: 5px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.options-logo svg {
+  width: 34px;
+  height: 34px;
+}
+
+.options-logo .logo-mic { fill: #F56600; }
+.options-logo .logo-cutout { fill: #1A1A1A; }
+.options-logo .logo-bolt { fill: #F56600; }
+
+h1,
+h2,
+h3,
+p { margin: 0; }
+
+h1 { font-size: 19px; }
+.options-brand p,
+.account-card > p,
+.lifetime-card p,
+.setting-row p {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.plan-badge,
+.privacy-pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(29, 139, 231, 0.1);
+  color: #1D8BE7;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.plan-badge.is-lifetime {
+  background: rgba(29, 139, 231, 0.16);
+  color: #1D8BE7;
+}
+
+.notice,
+.status-message {
+  padding: 12px 14px;
+  border: 1px solid rgba(205, 132, 49, 0.24);
+  border-radius: 14px;
+  background: rgba(255, 247, 229, 0.85);
+  color: #83571e;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.notice { margin-bottom: 16px; }
+.notice code { font-weight: 700; }
+
+.section-tabs {
+  display: inline-flex;
+  margin-bottom: 16px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.section-tab {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.section-tab.is-active {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 6px 16px rgba(59, 86, 143, 0.1);
+}
+
+.options-section {
+  display: grid;
+  gap: 14px;
+}
+
+.section-heading {
+  justify-content: space-between;
+  margin: 12px 2px 4px;
+}
+
+.eyebrow {
+  color: #1D8BE7;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+}
+
+h2 {
+  margin-top: 5px;
+  font-size: 25px;
+  letter-spacing: -0.035em;
+}
+
+.account-card,
+.lifetime-card,
+.settings-card {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--panel);
+  box-shadow: 0 16px 40px rgba(59, 86, 143, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.account-card > .button { margin-top: 16px; }
+
+label {
+  display: block;
+  margin: 14px 0 6px;
+  color: #374564;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.input-row { gap: 8px; }
+
+input {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 12px;
+  flex: 1;
+  border: 1px solid #cad5ea;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+}
+
+.button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  color: white;
+}
+
+.button--secondary {
+  border-color: #cbd6eb;
+  background: white;
+  color: #344464;
+}
+
+.button--quiet {
+  border-color: transparent;
+  background: rgba(83, 105, 165, 0.08);
+  color: #53658c;
+}
+
+.button--paypal {
+  background: #ffc439;
+  color: #172c55;
+}
+
+.divider {
+  display: flex;
+  margin: 18px 0 4px;
+  align-items: center;
+  gap: 10px;
+  color: #8996ae;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.divider::before,
+.divider::after {
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+  content: "";
+}
+
+.identity-row { gap: 12px; }
+.identity-row > div { flex: 1; }
+
+.avatar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dcedff, #e6ddff);
+  color: #4c56c5;
+  font-weight: 800;
+}
+
+.lifetime-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  background:
+    radial-gradient(circle at 90% 20%, rgba(151, 139, 255, 0.2), transparent 36%),
+    rgba(255, 255, 255, 0.84);
+}
+
+.price { text-align: right; }
+.price strong {
+  display: block;
+  font-size: 32px;
+  letter-spacing: -0.05em;
+}
+.price span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.checkout-actions {
+  grid-column: 1 / -1;
+  gap: 8px;
+}
+
+.success-message {
+  grid-column: 1 / -1;
+  color: #246b4b !important;
+  font-weight: 750;
+}
+
+.settings-card { padding: 4px 22px; }
+.setting-row {
+  min-height: 82px;
+  justify-content: space-between;
+  gap: 18px;
+}
+.setting-row + .setting-row { border-top: 1px solid var(--line); }
+
+.status-message {
+  min-height: 0;
+  margin-top: 14px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  text-align: center;
+}
+
+.status-message:empty { display: none; }
+.status-message.is-error { color: #a52d4a; }
+
+.hidden { display: none !important; }
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  .options-shell { width: min(100% - 24px, 760px); padding-top: 24px; }
+  .lifetime-card { grid-template-columns: 1fr; }
+  .price { text-align: left; }
+  .checkout-actions { flex-direction: column; }
+  .checkout-actions .button { width: 100%; }
+  .input-row { align-items: stretch; flex-direction: column; }
+}

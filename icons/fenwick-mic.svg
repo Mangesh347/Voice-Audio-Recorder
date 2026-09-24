@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Fenwick Recorder microphone</title>
+  <defs>
+    <linearGradient id="fenwickOrange" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F56600"/>
+      <stop offset=".52" stop-color="#F56600"/>
+      <stop offset="1" stop-color="#F56600"/>
+    </linearGradient>
+  </defs>
+  <path fill="#1A1A1A" d="M12 2h40c5.5 0 10 4.5 10 10v40c0 5.5-4.5 10-10 10H12C6.5 62 2 57.5 2 52V12C2 6.5 6.5 2 12 2Z"/>
+  <path fill="url(#fenwickOrange)" d="M32 9c-7.2 0-12 4.9-12 12.2v11.6C20 40.1 24.8 45 32 45s12-4.9 12-12.2V21.2C44 13.9 39.2 9 32 9Z"/>
+  <path fill="#1A1A1A" d="M27 18h3v17h-3zm7-3h3v23h-3z"/>
+  <path fill="url(#fenwickOrange)" d="M14.5 31.5a2.5 2.5 0 0 1 5 0c0 8.3 5.2 13 12.5 13s12.5-4.7 12.5-13a2.5 2.5 0 0 1 5 0c0 9.8-5.8 16.3-15 17.8V53H42a2.5 2.5 0 0 1 0 5H22a2.5 2.5 0 0 1 0-5h7.5v-3.7c-9.2-1.5-15-8-15-17.8Z"/>
+  <path fill="#F56600" d="m8 22 7-4-2 5 5 1-8 4 2-5-4-1Zm48 0-7-4 2 5-5 1 8 4-2-5 4-1Z"/>
+</svg>

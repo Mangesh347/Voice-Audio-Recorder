@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fenwick Recorder</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="recorder-shell">
+    <div class="ambient-waves" aria-hidden="true">
+      <span class="ambient-waves__top"></span>
+      <span class="ambient-waves__middle"></span>
+      <span class="ambient-waves__bottom"></span>
+      <svg class="music-ribbon" viewBox="0 82 368 436" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="ribbonGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#F56600" />
+            <stop offset="0.52" stop-color="#F56600" />
+            <stop offset="1" stop-color="#F56600" />
+          </linearGradient>
+          <path id="musicPath" d="M -34 522 C 72 586, 128 502, 62 436 S 36 320, 138 362 S 274 378, 224 284 S 218 170, 324 214 S 408 128, 306 58" />
+        </defs>
+        <use class="music-ribbon__line" href="#musicPath"></use>
+        <text class="music-ribbon__text">
+          <textPath href="#musicPath" startOffset="-45%">
+            MUSIC · CAPTURE THE CONVERSATION · STAY IN THE MOMENT ·
+            <animate attributeName="startOffset" from="-45%" to="105%" dur="14s" repeatCount="indefinite" />
+          </textPath>
+        </text>
+      </svg>
+    </div>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path class="logo-mic" d="M32 8c-7.5 0-12.5 5-12.5 12.7v12.1c0 7.7 5 12.7 12.5 12.7s12.5-5 12.5-12.7V20.7C44.5 13 39.5 8 32 8Z" />
+            <path class="logo-cutout" d="M27 17h3v19h-3zm7-3h3v25h-3z" />
+            <path class="logo-mic" d="M14 31.5a2.5 2.5 0 0 1 5 0c0 8.5 5.4 13.5 13 13.5s13-5 13-13.5a2.5 2.5 0 0 1 5 0c0 10-6 16.8-15.5 18.3V53H42a2.5 2.5 0 0 1 0 5H22a2.5 2.5 0 0 1 0-5h7.5v-3.2C20 48.3 14 41.5 14 31.5Z" />
+            <path class="logo-bolt" d="m7 22 8-4-2 5 5 1-9 4 2-5-4-1Zm50 0-8-4 2 5-5 1 9 4-2-5 4-1Z" />
+          </svg>
+        </span>
+        <div>
+          <h1>Fenwick Recorder</h1>
+          <p>Private Local Audio</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="planBadge" class="badge" type="button" aria-label="View current plan">Free</button>
+        <button id="themeBtn" class="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch Theme">
+          <span class="theme-toggle__track" aria-hidden="true">
+            <span class="theme-toggle__sun">☀</span>
+            <span class="theme-toggle__moon">☾</span>
+          </span>
+        </button>
+        <button id="settingsBtn" class="top-action" type="button" aria-label="Open settings">
+          <svg class="settings-glyph" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19.43 12.98c.04-.32.07-.65.07-.98s-.03-.66-.08-.98l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.3 7.3 0 0 0-1.69-.98L14.5 2.42A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1a.49.49 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65c-.04.32-.08.67-.08.98s.03.66.08.98l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46c.13.24.4.33.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.04.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.22.1.49.02.61-.22l2-3.46a.5.5 0 0 0-.12-.64l-2.11-1.65ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z" />
+          </svg>
+        </button>
+        <button id="profileBtn" class="top-action" type="button" aria-label="Open profile">
+          <span class="profile-glyph" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <div id="mainView">
+    <section id="idleControls" aria-labelledby="readyTitle">
+      <div class="hero-copy">
+        <h2 id="readyTitle">Keep The Moments<br />That Matter.</h2>
+      </div>
+
+      <fieldset class="source-picker">
+        <legend>Recording Source</legend>
+        <label>
+          <input type="radio" name="captureMode" value="tab_only" />
+          <span>Audio</span>
+        </label>
+        <label>
+          <input type="radio" name="captureMode" value="mic_only" />
+          <span>Voice</span>
+        </label>
+        <label>
+          <input type="radio" name="captureMode" value="tab_and_mic" checked />
+          <span>Audio + Voice</span>
+        </label>
+      </fieldset>
+
+      <button id="startBtn" class="record-orb" type="button" aria-label="Start Recording" aria-describedby="recordHint">
+        <span class="record-orb__ring">
+          <svg class="record-seal" viewBox="0 0 128 128" aria-hidden="true">
+            <defs>
+              <linearGradient id="sealGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#1D8BE7" />
+                <stop offset="0.52" stop-color="#1D8BE7" />
+                <stop offset="1" stop-color="#1D8BE7" />
+              </linearGradient>
+            </defs>
+            <path class="record-seal__outer" d="M 58.4 5.0 Q 64.0 2.0 69.6 5.0 Q 75.1 8.1 81.4 7.4 Q 87.7 6.7 91.7 11.7 Q 95.7 16.6 101.8 18.4 Q 107.8 20.2 109.6 26.2 Q 111.4 32.3 116.3 36.3 Q 121.3 40.3 120.6 46.6 Q 119.9 52.9 123.0 58.4 Q 126.0 64.0 123.0 69.6 Q 119.9 75.1 120.6 81.4 Q 121.3 87.7 116.3 91.7 Q 111.4 95.7 109.6 101.8 Q 107.8 107.8 101.8 109.6 Q 95.7 111.4 91.7 116.3 Q 87.7 121.3 81.4 120.6 Q 75.1 119.9 69.6 123.0 Q 64.0 126.0 58.4 123.0 Q 52.9 119.9 46.6 120.6 Q 40.3 121.3 36.3 116.3 Q 32.3 111.4 26.2 109.6 Q 20.2 107.8 18.4 101.8 Q 16.6 95.7 11.7 91.7 Q 6.7 87.7 7.4 81.4 Q 8.1 75.1 5.0 69.6 Q 2.0 64.0 5.0 58.4 Q 8.1 52.9 7.4 46.6 Q 6.7 40.3 11.7 36.3 Q 16.6 32.3 18.4 26.2 Q 20.2 20.2 26.2 18.4 Q 32.3 16.6 36.3 11.7 Q 40.3 6.7 46.6 7.4 Q 52.9 8.1 58.4 5.0 Z" />
+            <path class="record-seal__inner" d="M 59.9 20.4 Q 64.0 18.0 68.1 20.4 Q 72.2 22.8 76.9 22.2 Q 81.6 21.5 84.5 25.3 Q 87.3 29.1 91.9 30.3 Q 96.5 31.5 97.7 36.1 Q 98.9 40.7 102.7 43.5 Q 106.5 46.4 105.8 51.1 Q 105.2 55.8 107.6 59.9 Q 110.0 64.0 107.6 68.1 Q 105.2 72.2 105.8 76.9 Q 106.5 81.6 102.7 84.5 Q 98.9 87.3 97.7 91.9 Q 96.5 96.5 91.9 97.7 Q 87.3 98.9 84.5 102.7 Q 81.6 106.5 76.9 105.8 Q 72.2 105.2 68.1 107.6 Q 64.0 110.0 59.9 107.6 Q 55.8 105.2 51.1 105.8 Q 46.4 106.5 43.5 102.7 Q 40.7 98.9 36.1 97.7 Q 31.5 96.5 30.3 91.9 Q 29.1 87.3 25.3 84.5 Q 21.5 81.6 22.2 76.9 Q 22.8 72.2 20.4 68.1 Q 18.0 64.0 20.4 59.9 Q 22.8 55.8 22.2 51.1 Q 21.5 46.4 25.3 43.5 Q 29.1 40.7 30.3 36.1 Q 31.5 31.5 36.1 30.3 Q 40.7 29.1 43.5 25.3 Q 46.4 21.5 51.1 22.2 Q 55.8 22.8 59.9 20.4 Z" />
+          </svg>
+          <span class="record-orb__core" aria-hidden="true"></span>
+          <span class="record-orb__label" aria-hidden="true">
+            <svg class="record-logo" viewBox="0 0 64 64">
+              <path class="logo-mic" d="M32 8c-7.5 0-12.5 5-12.5 12.7v12.1c0 7.7 5 12.7 12.5 12.7s12.5-5 12.5-12.7V20.7C44.5 13 39.5 8 32 8Z" />
+              <path class="logo-cutout" d="M27 17h3v19h-3zm7-3h3v25h-3z" />
+              <path class="logo-mic" d="M14 31.5a2.5 2.5 0 0 1 5 0c0 8.5 5.4 13.5 13 13.5s13-5 13-13.5a2.5 2.5 0 0 1 5 0c0 10-6 16.8-15.5 18.3V53H42a2.5 2.5 0 0 1 0 5H22a2.5 2.5 0 0 1 0-5h7.5v-3.2C20 48.3 14 41.5 14 31.5Z" />
+              <path class="logo-bolt" d="m7 22 8-4-2 5 5 1-9 4 2-5-4-1Zm50 0-8-4 2 5-5 1 9 4-2-5 4-1Z" />
+            </svg>
+          </span>
+        </span>
+      </button>
+
+      <p id="errorMessage" class="error-message hidden" role="alert"></p>
+      <p id="recordHint" class="hint">Records This Browser Tab And Your Microphone. Your Audio Stays On This Device.</p>
+    </section>
+
+    <section id="activeControls" class="active-view hidden" aria-labelledby="statusLine">
+      <div class="live-stage">
+        <div class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <p id="statusLine" class="eyebrow">Recording Now</p>
+        <time id="recordingTimer" datetime="PT0S">00:00</time>
+        <p id="activeSource" class="active-note">Audio + Voice</p>
+      </div>
+      <div class="active-actions">
+        <button id="pauseBtn" class="control-btn" type="button"><span aria-hidden="true">Ⅱ</span> Pause</button>
+        <button id="resumeBtn" class="control-btn hidden" type="button"><span aria-hidden="true">▶</span> Resume</button>
+        <button id="endBtn" class="control-btn control-btn--stop" type="button"><span aria-hidden="true">■</span> End &amp; save</button>
+      </div>
+    </section>
+
+    <section id="quotaSection" class="usage-card" aria-label="0 of 10 recordings used this month">
+      <div class="usage-ring" aria-hidden="true">
+        <div class="usage-ring__value">
+          <strong id="qUsed">0</strong>
+          <small id="qLimit">of 10</small>
+        </div>
+      </div>
+      <span class="usage-mic" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 14.5a3.5 3.5 0 0 0 3.5-3.5V6a3.5 3.5 0 1 0-7 0v5a3.5 3.5 0 0 0 3.5 3.5Zm5.5-3.5a1 1 0 1 0-2 0 3.5 3.5 0 0 1-7 0 1 1 0 1 0-2 0 5.51 5.51 0 0 0 4.5 5.41V19H8.5a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2H13v-2.59A5.51 5.51 0 0 0 17.5 11Z" />
+        </svg>
+      </span>
+      <div class="usage-card__copy">
+        <strong>Recordings</strong>
+        <small id="qRemaining">10 left this month</small>
+      </div>
+      <button id="upgradeLink" class="usage-plan" type="button">Free plan</button>
+    </section>
+    </div>
+
+    <section id="panelView" class="popup-panel hidden" aria-labelledby="panelTitle">
+      <div class="panel-heading">
+        <button id="panelBackBtn" class="panel-back" type="button" aria-label="Back to recorder">←</button>
+        <div>
+          <p class="panel-eyebrow">Fenwick Recorder</p>
+          <h2 id="panelTitle">Settings</h2>
+        </div>
+      </div>
+
+      <div id="settingsPanel" class="panel-content">
+        <article class="panel-card">
+          <div class="panel-row">
+            <div><strong>Appearance</strong><small>Current popup theme</small></div>
+            <span id="settingsTheme" class="panel-value">Light</span>
+          </div>
+          <div class="panel-row">
+            <div><strong>Default Source</strong><small>Used for your next recording</small></div>
+            <span id="settingsSource" class="panel-value">Audio + Voice</span>
+          </div>
+          <div class="panel-row">
+            <div><strong>Local Privacy</strong><small>Recordings stay on this device</small></div>
+            <span class="privacy-check" aria-label="Enabled">✓</span>
+          </div>
+        </article>
+        <p class="panel-note">Use the theme switch above or choose a recording source on the recorder screen.</p>
+      </div>
+
+      <div id="profilePanel" class="panel-content hidden">
+        <article class="profile-card">
+          <span id="profileAvatar" class="profile-avatar" aria-hidden="true"><span></span></span>
+          <div>
+            <p class="panel-eyebrow">Your Plan</p>
+            <h3 id="profilePlan">Free Plan</h3>
+            <p id="profileUsage">0 Of 10 Recordings Used This Month</p>
+          </div>
+        </article>
+        <button id="googleLoginBtn" class="google-login" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.4-.18-2.05H12v3.87h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.9-1.75 2.98-4.33 2.98-7.35Z"/>
+            <path fill="#34A853" d="M12 22c2.7 0 4.98-.9 6.63-2.42l-3.24-2.51c-.9.6-2.05.96-3.39.96-2.61 0-4.82-1.76-5.61-4.13H3.04v2.59A10 10 0 0 0 12 22Z"/>
+            <path fill="#FBBC05" d="M6.39 13.9A6 6 0 0 1 6.08 12c0-.66.11-1.3.31-1.9V7.51H3.04A10 10 0 0 0 2 12c0 1.61.38 3.14 1.04 4.49l3.35-2.59Z"/>
+            <path fill="#EA4335" d="M12 5.97c1.47 0 2.79.51 3.83 1.5l2.87-2.88A9.63 9.63 0 0 0 12 2a10 10 0 0 0-8.96 5.51l3.35 2.59C7.18 7.73 9.39 5.97 12 5.97Z"/>
+          </svg>
+          <span>Continue With Google</span>
+        </button>
+        <p id="profileAccountStatus" class="account-status" role="status"></p>
+        <article class="panel-card">
+          <div class="panel-row">
+            <div><strong>No Login Required</strong><small>Free recording works anonymously</small></div>
+            <span class="privacy-check" aria-label="Enabled">✓</span>
+          </div>
+          <div class="panel-row">
+            <div><strong>Lifetime Access</strong><small>Unlimited local recordings</small></div>
+            <span class="panel-value">$20</span>
+          </div>
+        </article>
+        <p class="panel-note">Account sign-in and purchase verification remain optional. Your audio is never uploaded.</p>
+      </div>
+    </section>
+
+    <dialog id="upgradeDialog" class="upgrade-dialog" aria-labelledby="upgradeTitle">
+      <button id="upgradeCloseBtn" class="upgrade-dialog__close" type="button" aria-label="Close upgrade dialog">×</button>
+      <span class="upgrade-dialog__mark" aria-hidden="true">✦</span>
+      <p class="panel-eyebrow">One-Time Upgrade</p>
+      <h2 id="upgradeTitle">You’re On The Free Plan</h2>
+      <p id="upgradeDescription">Upgrade once to record without monthly limits. Your recordings always stay on this device.</p>
+      <div class="upgrade-price"><strong>$20</strong><span>USD · Lifetime</span></div>
+      <ul>
+        <li>Unlimited Local Recordings</li>
+        <li>No Monthly Recording Limit</li>
+        <li>Lifetime Pro Profile</li>
+      </ul>
+      <button id="testUpgradeBtn" class="upgrade-dialog__action" type="button">Upgrade To Lifetime Pro</button>
+      <small id="upgradeTestNote">Tap Upgrade to unlock Lifetime Pro on this browser.</small>
+    </dialog>
+  </main>
+
+  <script src="supabase-config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

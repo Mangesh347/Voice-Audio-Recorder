@@ -1,0 +1,41 @@
+# Changelog
+
+## 2026-09-23
+
+- Simplified Fenwick Recorder to local recording only.
+- Removed conversation transcription, PDF generation, summaries, model downloads, and processing backends.
+- Added an anonymous ten-recordings-per-calendar-month quota that resets by `YYYY-MM`.
+- Preserved local tab/microphone capture, pause, resume, timer, End & Save, and tab-close autosave.
+- Added Profile and Settings controls without changing the established popup theme.
+- Added optional Supabase Google/email login and cached Lifetime entitlement verification.
+- Added a tax-inclusive `$20 USD` Lifetime checkout scaffold with PayPal primary and Razorpay secondary.
+- Added idempotent Supabase payment event storage and signature-verifying webhook functions.
+- Narrowed extension host access from all sites to Supabase only.
+- Reduced the popup from a fixed 600px height to its natural content height.
+- Fitted the animated background to the compact popup without distorting its curves.
+- Increased the animated orange ribbon to a brighter medium-orange treatment.
+- Brightened the recording seal with a Deep Sky Blue gradient.
+- Replaced the extension artwork with microphone icons tuned for 16, 32, 48, and 128px.
+- Updated popup copy to title case and limited decorative curves to Sky Blue and Orange.
+- Made the top and bottom background shapes brighter and more transparent.
+- Added working Audio, Voice, and Audio + Voice capture paths with a locally persisted preference.
+- Replaced Sky Blue accents with a Material You Purple and Orange palette.
+- Reworked the popup profile control as a purple Material person silhouette.
+- Added a persistent Light/Dark popup theme toggle with dedicated dark tokens.
+- Reordered popup actions to Plan, Theme, Settings, then Profile.
+- Moved Settings and Profile into accessible internal popup tabs.
+- Replaced the text gear with a Material settings icon and simplified the plan badge to Free or Pro.
+- Added a Google sign-in control inside the popup Profile tab, backed by the service worker.
+- Added a bright orange neon-style default avatar when Lifetime/Pro entitlement is active.
+- Increased orange ribbon and recording-seal brightness in dark mode.
+- Refined dark mode with vivid orange curves and a brighter lilac recording treatment.
+- Polished dark-theme colors only: deeper plum canvas, brighter orange ribbon, and luminous lilac accents.
+- Replaced the Start Recording text with the Fenwick orange microphone mark.
+- Switched the UI accent palette to Royal Blue (#1D8BE7), Vibrant Orange (#F56600), and charcoal (#1A1A1A) in light and dark themes.
+- Made Lifetime Pro activate when Upgrade is tapped, with a local unlock fallback.
+- Set dark-theme blue accents to Deep Sky Blue (#00BFFF).
+- Added a Vercel-ready marketing website with Lifetime-only pricing, Privacy, Terms, Refund, and Support pages.
+- Replaced the simple quota counter with a circular monthly usage, remaining-recordings, and plan card.
+- Restored a high-contrast official-style Google sign-in button in both themes.
+- Added an in-popup Lifetime Pro upgrade dialog with a configuration-gated local test activation.
+- Added local five-second chunk recovery for interrupted Chrome or PC sessions.
