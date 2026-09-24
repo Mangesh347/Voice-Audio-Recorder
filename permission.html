@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Allow Microphone — Fenwick Recorder</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #5c6b82;
+      --panel: #f4f8fc;
+      --accent: #ffa500;
+      --blue: #1d8be7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 165, 0, 0.18), transparent 40%),
+        radial-gradient(circle at 80% 90%, rgba(29, 139, 231, 0.16), transparent 42%),
+        var(--panel);
+    }
+    main {
+      width: min(420px, calc(100vw - 32px));
+      padding: 28px 24px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 18px 40px rgba(26, 26, 26, 0.1);
+      text-align: center;
+    }
+    img { width: 96px; height: 96px; border-radius: 0; background: transparent; }
+    h1 { margin: 16px 0 8px; font-size: 22px; }
+    p { margin: 0 0 12px; color: var(--muted); line-height: 1.5; font-size: 14px; }
+    button {
+      margin-top: 8px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), #1490d8);
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.65; cursor: wait; }
+    #status { min-height: 1.4em; margin-top: 14px; font-size: 13px; }
+    #status.is-error { color: #c23b4a; }
+    #status.is-ok { color: #1f7a45; }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="icons/fenwick-mic.svg" alt="" width="96" height="96" />
+    <h1>Allow Microphone Access</h1>
+    <p>
+      Fenwick Recorder needs your microphone to capture Voice and Audio + Voice.
+      Chrome will show a permission prompt next — choose Allow.
+    </p>
+    <button id="allowBtn" type="button">Allow Microphone</button>
+    <p id="status" role="status"></p>
+  </main>
+  <script src="permission.js"></script>
+</body>
+</html>

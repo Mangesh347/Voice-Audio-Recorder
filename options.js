@@ -200,15 +200,24 @@ optionEl("razorpayBtn").addEventListener("click", async () => {
 });
 
 async function initialize() {
-  const configured = FenwickAuth.isConfigured();
+  const configured = await FenwickAuth.isConfigured();
   const testUpgrade = Boolean(globalThis.FENWICK_CONFIG?.testLifetimeUpgrade);
-  optionEl("configNotice").classList.toggle("hidden", configured || testUpgrade);
-  document.querySelectorAll("#googleSignInBtn, #sendCodeBtn, #refreshPlanBtn").forEach((button) => {
-    if (!configured) button.disabled = true;
+  optionEl("configNotice").classList.toggle("hidden", configured);
+  document.querySelectorAll("#googleSignInBtn, #sendCodeBtn").forEach((button) => {
+    button.disabled = !configured;
   });
   document.querySelectorAll("#paypalBtn, #razorpayBtn").forEach((button) => {
     button.disabled = !(configured || testUpgrade);
   });
+
+  const redirectUrl = FenwickAuth.getExtensionRedirectUrl();
+  optionEl("redirectUrlDisplay").textContent = redirectUrl;
+
+  const config = await FenwickAuth.getConfig();
+  if (config.supabaseAnonKey) {
+    optionEl("supabaseKeyInput").value = config.supabaseAnonKey;
+    optionEl("supabaseKeyInput").placeholder = "Key saved — paste a new one to replace";
+  }
 
   const { optionsSection } = await chrome.storage.local.get("optionsSection");
   await chrome.storage.local.remove("optionsSection");
@@ -226,5 +235,32 @@ async function initialize() {
     );
   }
 }
+
+optionEl("saveSupabaseKeyBtn").addEventListener("click", async () => {
+  const button = optionEl("saveSupabaseKeyBtn");
+  setBusy(button, true, "Saving…");
+  showStatus("");
+  try {
+    await FenwickAuth.saveSupabaseKey(optionEl("supabaseKeyInput").value);
+    showStatus("Supabase key saved. Continue with Google is ready.");
+    optionEl("configNotice").classList.add("hidden");
+    optionEl("googleSignInBtn").disabled = false;
+    optionEl("sendCodeBtn").disabled = false;
+  } catch (error) {
+    showStatus(error.message, true);
+  } finally {
+    setBusy(button, false);
+  }
+});
+
+optionEl("copyRedirectBtn").addEventListener("click", async () => {
+  const url = optionEl("redirectUrlDisplay").textContent.trim();
+  try {
+    await navigator.clipboard.writeText(url);
+    showStatus("Redirect URL copied. Paste it into Supabase Auth → Redirect URLs.");
+  } catch {
+    showStatus("Could not copy automatically — select and copy the URL manually.", true);
+  }
+});
 
 initialize().catch((error) => showStatus(error.message, true));

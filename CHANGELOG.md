@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-09-25
+
+- Removed the separate options tab; Profile and Settings live only in the popup.
+- Continue with Google opens Google signup/login from the popup (Chrome identity + Supabase).
+- Baked in the Supabase publishable key; Settings no longer shows keys or redirect URLs.
+- Switched Google sign-in to Chrome-native id_token flow; pass matching nonce to Supabase.
+- Lifetime Pro now requires Google sign-in before unlock.
+- Dark and light theme background curves use `#FF6800`.
+- Rebuilt marketing site (features, Free vs Pro, pricing, how it works, FAQ) with recorder blue/orange theme.
+- Bumped to v1.1.0 for a popup-only, store-ready build.
+
+## 2026-09-24
+
+- Logo is now the solid Deep Sky Blue (#00BFFF) mic everywhere (popup, options, website, toolbar icons) — no orange mark, no internal gaps.
+- Logo is now transparent (no plate background) and larger across popup, options, record seal, website, and toolbar icons.
+- Fixed silent Voice recordings: request microphone permission from the extension UI before capture, resume AudioContext, and stop silently falling back to tab-only when mic fails.
+- Added `permission.html` mic grant page and offscreen readiness handshake.
+- Applied the orange microphone brand mark (#FFA500) across popup, options, toolbar icons (16/32/48/128), and the marketing site.
+- Shared SVG source of truth in `icons/fenwick-mic.svg` with a transparent mark variant for the record seal.
+
 ## 2026-09-23
 
 - Simplified Fenwick Recorder to local recording only.
@@ -35,6 +55,8 @@
 - Made Lifetime Pro activate when Upgrade is tapped, with a local unlock fallback.
 - Set dark-theme blue accents to Deep Sky Blue (#00BFFF).
 - Added a Vercel-ready marketing website with Lifetime-only pricing, Privacy, Terms, Refund, and Support pages.
+- Removed the top ambient half-circles from the popup; only the bottom curve remains.
+- Set background curves to orange `#FFA500` in light mode, and dark-theme orange accents to the same `#FFA500`.
 - Replaced the simple quota counter with a circular monthly usage, remaining-recordings, and plan card.
 - Restored a high-contrast official-style Google sign-in button in both themes.
 - Added an in-popup Lifetime Pro upgrade dialog with a configuration-gated local test activation.

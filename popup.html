@@ -9,15 +9,13 @@
 <body>
   <main class="recorder-shell">
     <div class="ambient-waves" aria-hidden="true">
-      <span class="ambient-waves__top"></span>
-      <span class="ambient-waves__middle"></span>
       <span class="ambient-waves__bottom"></span>
       <svg class="music-ribbon" viewBox="0 82 368 436" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="ribbonGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#F56600" />
-            <stop offset="0.52" stop-color="#F56600" />
-            <stop offset="1" stop-color="#F56600" />
+            <stop offset="0" stop-color="#FF6800" />
+            <stop offset="0.52" stop-color="#FF6800" />
+            <stop offset="1" stop-color="#FF8533" />
           </linearGradient>
           <path id="musicPath" d="M -34 522 C 72 586, 128 502, 62 436 S 36 320, 138 362 S 274 378, 224 284 S 218 170, 324 214 S 408 128, 306 58" />
         </defs>
@@ -33,11 +31,11 @@
     <header class="topbar">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 64 64">
-            <path class="logo-mic" d="M32 8c-7.5 0-12.5 5-12.5 12.7v12.1c0 7.7 5 12.7 12.5 12.7s12.5-5 12.5-12.7V20.7C44.5 13 39.5 8 32 8Z" />
-            <path class="logo-cutout" d="M27 17h3v19h-3zm7-3h3v25h-3z" />
-            <path class="logo-mic" d="M14 31.5a2.5 2.5 0 0 1 5 0c0 8.5 5.4 13.5 13 13.5s13-5 13-13.5a2.5 2.5 0 0 1 5 0c0 10-6 16.8-15.5 18.3V53H42a2.5 2.5 0 0 1 0 5H22a2.5 2.5 0 0 1 0-5h7.5v-3.2C20 48.3 14 41.5 14 31.5Z" />
-            <path class="logo-bolt" d="m7 22 8-4-2 5 5 1-9 4 2-5-4-1Zm50 0-8-4 2 5-5 1 9 4-2-5 4-1Z" />
+          <svg class="brand-logo" viewBox="0 0 64 64" width="52" height="52" focusable="false">
+            <path fill="#00BFFF" d="M11 18l6.2-3.2-1.6 4.4 4.4.8-7.2 3.6 1.6-4.4-3.4-1.2Zm42 0-6.2-3.2 1.6 4.4-4.4.8 7.2 3.6-1.6-4.4 3.4-1.2Z"/>
+            <rect x="22" y="8" width="20" height="34" rx="10" fill="#00BFFF"/>
+            <path fill="#00BFFF" d="M18 29.5a2.2 2.2 0 0 1 4.4 0c0 7.4 4.4 12 9.6 12s9.6-4.6 9.6-12a2.2 2.2 0 0 1 4.4 0c0 9.4-5.6 16.2-14 17.4V50h5.2a2.2 2.2 0 1 1 0 4.4H26.8a2.2 2.2 0 1 1 0-4.4H32v-3.1C23.6 45.7 18 38.9 18 29.5Z"/>
+            <rect x="21.5" y="53.2" width="21" height="4.4" rx="2.2" fill="#00BFFF"/>
           </svg>
         </span>
         <div>
@@ -101,11 +99,11 @@
           </svg>
           <span class="record-orb__core" aria-hidden="true"></span>
           <span class="record-orb__label" aria-hidden="true">
-            <svg class="record-logo" viewBox="0 0 64 64">
-              <path class="logo-mic" d="M32 8c-7.5 0-12.5 5-12.5 12.7v12.1c0 7.7 5 12.7 12.5 12.7s12.5-5 12.5-12.7V20.7C44.5 13 39.5 8 32 8Z" />
-              <path class="logo-cutout" d="M27 17h3v19h-3zm7-3h3v25h-3z" />
-              <path class="logo-mic" d="M14 31.5a2.5 2.5 0 0 1 5 0c0 8.5 5.4 13.5 13 13.5s13-5 13-13.5a2.5 2.5 0 0 1 5 0c0 10-6 16.8-15.5 18.3V53H42a2.5 2.5 0 0 1 0 5H22a2.5 2.5 0 0 1 0-5h7.5v-3.2C20 48.3 14 41.5 14 31.5Z" />
-              <path class="logo-bolt" d="m7 22 8-4-2 5 5 1-9 4 2-5-4-1Zm50 0-8-4 2 5-5 1 9 4-2-5 4-1Z" />
+            <svg class="record-logo" viewBox="0 0 64 64" width="72" height="72" focusable="false">
+              <path fill="#00BFFF" d="M11 18l6.2-3.2-1.6 4.4 4.4.8-7.2 3.6 1.6-4.4-3.4-1.2Zm42 0-6.2-3.2 1.6 4.4-4.4.8 7.2 3.6-1.6-4.4 3.4-1.2Z"/>
+              <rect x="22" y="8" width="20" height="34" rx="10" fill="#00BFFF"/>
+              <path fill="#00BFFF" d="M18 29.5a2.2 2.2 0 0 1 4.4 0c0 7.4 4.4 12 9.6 12s9.6-4.6 9.6-12a2.2 2.2 0 0 1 4.4 0c0 9.4-5.6 16.2-14 17.4V50h5.2a2.2 2.2 0 1 1 0 4.4H26.8a2.2 2.2 0 1 1 0-4.4H32v-3.1C23.6 45.7 18 38.9 18 29.5Z"/>
+              <rect x="21.5" y="53.2" width="21" height="4.4" rx="2.2" fill="#00BFFF"/>
             </svg>
           </span>
         </span>
@@ -173,7 +171,7 @@
             <span class="privacy-check" aria-label="Enabled">✓</span>
           </div>
         </article>
-        <p class="panel-note">Use the theme switch above or choose a recording source on the recorder screen.</p>
+        <p class="panel-note">Theme and source stay on this device. Nothing is uploaded.</p>
       </div>
 
       <div id="profilePanel" class="panel-content hidden">
@@ -194,10 +192,11 @@
           </svg>
           <span>Continue With Google</span>
         </button>
+        <button id="googleSignOutBtn" class="panel-action hidden" type="button">Sign Out</button>
         <p id="profileAccountStatus" class="account-status" role="status"></p>
         <article class="panel-card">
           <div class="panel-row">
-            <div><strong>No Login Required</strong><small>Free recording works anonymously</small></div>
+            <div><strong>No Login Required</strong><small>Free recording works without an account</small></div>
             <span class="privacy-check" aria-label="Enabled">✓</span>
           </div>
           <div class="panel-row">
@@ -205,13 +204,20 @@
             <span class="panel-value">$20</span>
           </div>
         </article>
-        <p class="panel-note">Account sign-in and purchase verification remain optional. Your audio is never uploaded.</p>
+        <p class="panel-note">Lifetime Pro requires Google sign-in first. Your audio stays on this device.</p>
       </div>
     </section>
 
     <dialog id="upgradeDialog" class="upgrade-dialog" aria-labelledby="upgradeTitle">
       <button id="upgradeCloseBtn" class="upgrade-dialog__close" type="button" aria-label="Close upgrade dialog">×</button>
-      <span class="upgrade-dialog__mark" aria-hidden="true">✦</span>
+      <span class="upgrade-dialog__mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="56" height="56" focusable="false">
+          <path fill="#00BFFF" d="M11 18l6.2-3.2-1.6 4.4 4.4.8-7.2 3.6 1.6-4.4-3.4-1.2Zm42 0-6.2-3.2 1.6 4.4-4.4.8 7.2 3.6-1.6-4.4 3.4-1.2Z"/>
+          <rect x="22" y="8" width="20" height="34" rx="10" fill="#00BFFF"/>
+          <path fill="#00BFFF" d="M18 29.5a2.2 2.2 0 0 1 4.4 0c0 7.4 4.4 12 9.6 12s9.6-4.6 9.6-12a2.2 2.2 0 0 1 4.4 0c0 9.4-5.6 16.2-14 17.4V50h5.2a2.2 2.2 0 1 1 0 4.4H26.8a2.2 2.2 0 1 1 0-4.4H32v-3.1C23.6 45.7 18 38.9 18 29.5Z"/>
+          <rect x="21.5" y="53.2" width="21" height="4.4" rx="2.2" fill="#00BFFF"/>
+        </svg>
+      </span>
       <p class="panel-eyebrow">One-Time Upgrade</p>
       <h2 id="upgradeTitle">You’re On The Free Plan</h2>
       <p id="upgradeDescription">Upgrade once to record without monthly limits. Your recordings always stay on this device.</p>

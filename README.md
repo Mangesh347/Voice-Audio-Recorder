@@ -22,8 +22,8 @@ cd website
 python -m http.server 4177
 ```
 
-Deploy on Vercel with **Root Directory** = `website`.
-
+Vercel is configured by the root `vercel.json` (`outputDirectory: website`).  
+If the homepage is blank after import, open **Project Settings → General → Root Directory**, set it to `website`, then Redeploy.
 ## Repo
 
 https://github.com/Mangesh347/Voice-Audio-Recorder

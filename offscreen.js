@@ -8,12 +8,25 @@ let audioContext = null;
 let tabStream = null;
 let micStream = null;
 let isFinalizing = false;
+let stopReason = "user";
 
-const TIMESLICE_MS = 5000;
+const TIMESLICE_MS = 1000;
 const RECOVERY_DB = "fenwick-recorder-recovery";
 const RECOVERY_STORE = "recording";
 let chunkIndex = 0;
 let pendingChunkWrites = [];
+
+function preferredMimeType() {
+  const candidates = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/ogg;codecs=opus",
+  ];
+  for (const type of candidates) {
+    if (MediaRecorder.isTypeSupported(type)) return type;
+  }
+  return "";
+}
 
 function openRecoveryDb() {
   return new Promise((resolve, reject) => {
@@ -63,6 +76,40 @@ async function clearRecovery() {
   db.close();
 }
 
+async function getMicrophoneStream() {
+  const constraints = {
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    },
+    video: false,
+  };
+
+  try {
+    return await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (primaryError) {
+    // Fallback for older Chrome constraint handling.
+    try {
+      return await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    } catch {
+      const name = primaryError?.name || "Error";
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        throw new Error(
+          "Microphone permission is blocked. Allow the microphone for Fenwick Recorder, then try again.",
+        );
+      }
+      if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        throw new Error("No microphone was found on this device.");
+      }
+      if (name === "NotReadableError" || name === "TrackStartError") {
+        throw new Error("Your microphone is in use by another app. Close it and try again.");
+      }
+      throw new Error(primaryError?.message || "Microphone could not be opened.");
+    }
+  }
+}
+
 async function startCapture(streamId, captureMode = "tab_and_mic") {
   stopReason = "user";
   isFinalizing = false;
@@ -71,54 +118,76 @@ async function startCapture(streamId, captureMode = "tab_and_mic") {
   tabStream = null;
   micStream = null;
 
-  // Audio and Audio + Voice capture the selected browser tab.
-  if (captureMode !== "mic_only") {
-    if (!streamId) throw new Error("Browser audio is unavailable.");
-    tabStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        mandatory: {
-          chromeMediaSource: "tab",
-          chromeMediaSourceId: streamId,
-        },
-      },
-      video: false,
-    });
-  }
+  const needsTab = captureMode !== "mic_only";
+  const needsMic = captureMode !== "tab_only";
 
-  // Voice and Audio + Voice request microphone input.
-  if (captureMode !== "tab_only") {
+  if (needsTab) {
+    if (!streamId) throw new Error("Browser audio is unavailable for this tab.");
     try {
-      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (e) {
-      micStream = null;
+      tabStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          mandatory: {
+            chromeMediaSource: "tab",
+            chromeMediaSourceId: streamId,
+          },
+        },
+        video: false,
+      });
+    } catch (error) {
+      throw new Error(
+        error?.message ||
+          "Could not capture this tab’s audio. Reload the tab and try again.",
+      );
     }
   }
-  if (captureMode === "mic_only" && !micStream) {
-    throw new Error("Microphone permission is required for Voice recording.");
+
+  if (needsMic) {
+    micStream = await getMicrophoneStream();
   }
+
+  if (!tabStream && !micStream) {
+    throw new Error("No audio source is available to record.");
+  }
+
+  const mimeType = preferredMimeType() || "audio/webm";
 
   await clearRecovery();
   await writeRecoveryEntry({
     key: "meta",
     startedAt: Date.now(),
-    mimeType: "audio/webm",
+    mimeType,
     captureMode,
   });
 
-  // Mix the selected sources. Pipe captured tab audio back to the speakers
-  // because Chrome mutes a tab while its stream is captured.
+  // Mix selected sources. Resume AudioContext — a suspended context records silence.
   audioContext = new AudioContext();
+  if (audioContext.state === "suspended") {
+    await audioContext.resume();
+  }
   const destination = audioContext.createMediaStreamDestination();
 
   if (tabStream) {
     const tabSource = audioContext.createMediaStreamSource(tabStream);
-    tabSource.connect(destination);
-    tabSource.connect(audioContext.destination);
+    const tabGain = audioContext.createGain();
+    tabGain.gain.value = 1;
+    tabSource.connect(tabGain);
+    tabGain.connect(destination);
+    // Pipe tab audio back to speakers (Chrome mutes the tab while capturing).
+    tabGain.connect(audioContext.destination);
   }
 
   if (micStream) {
     const micSource = audioContext.createMediaStreamSource(micStream);
-    micSource.connect(destination);
+    const micGain = audioContext.createGain();
+    micGain.gain.value = 1;
+    micSource.connect(micGain);
+    micGain.connect(destination);
+  }
+
+  const mixedTracks = destination.stream.getAudioTracks();
+  if (!mixedTracks.length || mixedTracks.every((track) => track.readyState !== "live")) {
+    cleanupStreams();
+    throw new Error("The mixed audio stream has no live tracks.");
   }
 
   if (tabStream) {
@@ -136,9 +205,11 @@ async function startCapture(streamId, captureMode = "tab_and_mic") {
     };
   }
 
-  // 4. Record the mixed stream.
   chunks = [];
-  mediaRecorder = new MediaRecorder(destination.stream, { mimeType: "audio/webm" });
+  mediaRecorder = new MediaRecorder(
+    destination.stream,
+    mimeType ? { mimeType } : undefined,
+  );
   mediaRecorder.ondataavailable = (e) => {
     if (!e.data || e.data.size === 0) return;
     chunks.push(e.data);
@@ -151,11 +222,16 @@ async function startCapture(streamId, captureMode = "tab_and_mic") {
     }).catch(() => null);
     pendingChunkWrites.push(write);
   };
+  mediaRecorder.onerror = () => {
+    stopCapture("recorder_error");
+  };
   mediaRecorder.onstop = () => finalize(stopReason);
   mediaRecorder.start(TIMESLICE_MS);
+
   return {
     micIncluded: Boolean(micStream),
     tabIncluded: Boolean(tabStream),
+    mimeType,
   };
 }
 
@@ -165,14 +241,15 @@ function pauseCapture() {
 
 function resumeCapture() {
   if (mediaRecorder && mediaRecorder.state === "paused") mediaRecorder.resume();
+  if (audioContext?.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
 }
-
-let stopReason = "user";
 
 function stopCapture(reason) {
   stopReason = reason || "user";
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
-    mediaRecorder.stop(); // triggers onstop -> finalize()
+    mediaRecorder.stop();
   }
 }
 
@@ -180,17 +257,28 @@ async function finalize(reason) {
   if (isFinalizing) return;
   isFinalizing = true;
   await Promise.allSettled(pendingChunkWrites);
-  const blob = new Blob(chunks, { type: "audio/webm" });
+  const mimeType = preferredMimeType() || "audio/webm";
+  const blob = new Blob(chunks, { type: mimeType });
   chunks = [];
 
   cleanupStreams();
+
+  if (!blob.size) {
+    chrome.runtime.sendMessage({
+      type: "RECORDING_FINISHED",
+      base64Data: "",
+      mimeType,
+      reason: reason === "user" ? "empty_recording" : reason,
+    }).catch(() => {});
+    return;
+  }
 
   const base64Data = await blobToBase64(blob);
 
   const response = await chrome.runtime.sendMessage({
     type: "RECORDING_FINISHED",
     base64Data,
-    mimeType: "audio/webm",
+    mimeType,
     reason,
   });
   if (response?.ok) {
@@ -218,6 +306,11 @@ async function recoverInterruptedCapture() {
 
   const mimeType = meta.mimeType || "audio/webm";
   const blob = new Blob(recoveredChunks, { type: mimeType });
+  if (!blob.size) {
+    await clearRecovery();
+    return { recovered: false };
+  }
+
   const base64Data = await blobToBase64(blob);
   const response = await chrome.runtime.sendMessage({
     type: "RECORDING_FINISHED",
@@ -232,7 +325,9 @@ async function recoverInterruptedCapture() {
 
 function cleanupStreams() {
   [tabStream, micStream].forEach((s) => s && s.getTracks().forEach((t) => t.stop()));
-  if (audioContext) audioContext.close();
+  if (audioContext) {
+    audioContext.close().catch(() => {});
+  }
   tabStream = null;
   micStream = null;
   audioContext = null;
@@ -243,8 +338,7 @@ function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      // reader.result is "data:audio/webm;base64,AAAA..." — strip the prefix.
-      const base64 = reader.result.split(",")[1];
+      const base64 = String(reader.result || "").split(",")[1] || "";
       resolve(base64);
     };
     reader.onerror = reject;
@@ -256,6 +350,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.target !== "offscreen") return;
   (async () => {
     switch (msg.type) {
+      case "PING":
+        sendResponse({ ok: true, ready: true });
+        break;
       case "START_RECORDING":
         sendResponse({
           ok: true,
@@ -278,9 +375,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ ok: true, ...(await recoverInterruptedCapture()) });
         break;
       default:
-        sendResponse({ ok: false });
+        sendResponse({ ok: false, error: "Unknown offscreen command." });
     }
   })().catch((error) => {
+    cleanupStreams();
     sendResponse({ ok: false, error: error?.message || "Offscreen recorder failed." });
   });
   return true;

@@ -5,7 +5,7 @@ Static marketing site for the Fenwick Labs Chrome extension.
 ## Stack
 
 - Static HTML / CSS
-- Vercel-ready via `vercel.json`
+- Vercel-ready via root `vercel.json` (`outputDirectory: website`)
 
 ## Local preview
 
@@ -18,10 +18,13 @@ Open `http://127.0.0.1:4177`.
 
 ## Deploy on Vercel
 
-1. Import `Mangesh347/Voice-Audio-Recorder`.
-2. Set **Root Directory** to `website`.
-3. Framework Preset: Other.
-4. Deploy.
+**Recommended (already configured in root `vercel.json`):**
+
+- Framework: Other
+- Output Directory: `website`
+- Install / Build commands: leave empty
+
+Or set **Root Directory** to `website` in Project Settings → General.
 
 ## Pricing on this site
 

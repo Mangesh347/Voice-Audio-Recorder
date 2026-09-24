@@ -68,17 +68,49 @@ async function incrementRecordingUsage() {
   await chrome.storage.local.set({ quota });
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function ensureOffscreen() {
   const existing = await chrome.runtime.getContexts({
     contextTypes: ["OFFSCREEN_DOCUMENT"],
   });
-  if (existing.length > 0) return;
+  if (existing.length === 0) {
+    await chrome.offscreen.createDocument({
+      url: OFFSCREEN_URL,
+      // USER_MEDIA: mic + tab capture. AUDIO_PLAYBACK: monitor tab audio while recording.
+      reasons: ["USER_MEDIA", "AUDIO_PLAYBACK"],
+      justification: "Record tab audio and microphone locally, and play captured tab audio to the speakers.",
+    });
+  }
 
-  await chrome.offscreen.createDocument({
-    url: OFFSCREEN_URL,
-    reasons: ["USER_MEDIA"],
-    justification: "Record tab audio and microphone locally for the active call.",
-  });
+  // Wait until the offscreen script has registered its message listener.
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    try {
+      const ping = await chrome.runtime.sendMessage({ target: "offscreen", type: "PING" });
+      if (ping?.ok) return;
+    } catch {
+      // Document still booting.
+    }
+    await sleep(50);
+  }
+  throw new Error("Recorder engine failed to start. Reload the extension and try again.");
+}
+
+async function sendToOffscreen(message) {
+  await ensureOffscreen();
+  let lastError = null;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      const result = await chrome.runtime.sendMessage({ target: "offscreen", ...message });
+      if (result) return result;
+    } catch (error) {
+      lastError = error;
+    }
+    await sleep(40);
+  }
+  throw lastError || new Error("Could not reach the recorder engine.");
 }
 
 async function closeOffscreen() {
@@ -97,12 +129,20 @@ async function startRecording(tabId, captureMode = "tab_and_mic") {
   const needsTabAudio = normalizedMode !== "mic_only";
   if (needsTabAudio && !tabId) throw new Error("No active tab is available.");
 
-  const streamId = needsTabAudio
-    ? await chrome.tabCapture.getMediaStreamId({ targetTabId: tabId })
-    : null;
-
   await ensureOffscreen();
 
+  let streamId = null;
+  if (needsTabAudio) {
+    try {
+      streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tabId });
+    } catch (error) {
+      throw new Error(
+        "Could not capture this tab. Use a normal https tab (not chrome://), reload it, and try again.",
+      );
+    }
+  }
+
+  // Stream id expires quickly — capture immediately after minting it.
   state = {
     status: "recording",
     tabId: needsTabAudio ? tabId : null,
@@ -113,8 +153,7 @@ async function startRecording(tabId, captureMode = "tab_and_mic") {
 
   let captureResult;
   try {
-    captureResult = await chrome.runtime.sendMessage({
-      target: "offscreen",
+    captureResult = await sendToOffscreen({
       type: "START_RECORDING",
       streamId,
       captureMode: state.captureMode,
@@ -128,12 +167,15 @@ async function startRecording(tabId, captureMode = "tab_and_mic") {
     await closeOffscreen();
     throw error;
   }
-  if (state.captureMode === "tab_and_mic" && !captureResult.micIncluded) {
-    state.captureMode = "tab_only";
-    await chrome.storage.local.set({ liveState: state });
-    notify(
-      "Microphone unavailable",
-      "Fenwick is recording browser audio only. Check microphone permission before your next recording.",
+
+  const needsMic = state.captureMode !== "tab_only";
+  if (needsMic && !captureResult.micIncluded) {
+    await sendToOffscreen({ type: "STOP_RECORDING", reason: "mic_missing" }).catch(() => {});
+    state = { status: "idle", tabId: null, startedAt: null, captureMode: null };
+    await chrome.storage.local.remove("liveState");
+    await closeOffscreen();
+    throw new Error(
+      "Microphone permission is required. Allow the microphone for Fenwick Recorder, then try again.",
     );
   }
 
@@ -145,10 +187,7 @@ async function pauseRecording() {
   if (state.status !== "recording") return;
   state.status = "paused";
   await chrome.storage.local.set({ liveState: state });
-  await chrome.runtime.sendMessage({
-    target: "offscreen",
-    type: "PAUSE_RECORDING",
-  });
+  await sendToOffscreen({ type: "PAUSE_RECORDING" });
   await chrome.action.setBadgeText({ text: "II" });
   await chrome.action.setBadgeBackgroundColor({ color: "#d89033" });
 }
@@ -157,21 +196,14 @@ async function resumeRecording() {
   if (state.status !== "paused") return;
   state.status = "recording";
   await chrome.storage.local.set({ liveState: state });
-  await chrome.runtime.sendMessage({
-    target: "offscreen",
-    type: "RESUME_RECORDING",
-  });
+  await sendToOffscreen({ type: "RESUME_RECORDING" });
   await chrome.action.setBadgeText({ text: "REC" });
   await chrome.action.setBadgeBackgroundColor({ color: "#e5526f" });
 }
 
 async function stopRecording(reason = "user") {
   if (state.status === "idle") return;
-  await chrome.runtime.sendMessage({
-    target: "offscreen",
-    type: "STOP_RECORDING",
-    reason,
-  });
+  await sendToOffscreen({ type: "STOP_RECORDING", reason });
 
   state = { status: "idle", tabId: null, startedAt: null, captureMode: null };
   await chrome.storage.local.remove("liveState");
@@ -180,7 +212,15 @@ async function stopRecording(reason = "user") {
 
 async function handleRecordingFinished({ base64Data, mimeType, reason }) {
   if (!base64Data) {
-    notify("Recording could not be saved", "No audio data was captured.");
+    state = { status: "idle", tabId: null, startedAt: null, captureMode: null };
+    await chrome.storage.local.remove("liveState");
+    await chrome.action.setBadgeText({ text: "" });
+    notify(
+      "Recording could not be saved",
+      reason === "empty_recording"
+        ? "No audio was captured. Allow the microphone and make sure the tab is playing sound."
+        : "No audio data was captured.",
+    );
     return;
   }
 
@@ -215,11 +255,7 @@ async function handleRecordingFinished({ base64Data, mimeType, reason }) {
 }
 
 async function recoverInterruptedRecording() {
-  await ensureOffscreen();
-  const result = await chrome.runtime.sendMessage({
-    target: "offscreen",
-    type: "RECOVER_RECORDING",
-  });
+  const result = await sendToOffscreen({ type: "RECOVER_RECORDING" });
 
   if (!result?.recovered) {
     state = { status: "idle", tabId: null, startedAt: null, captureMode: null };
@@ -286,16 +322,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           sendResponse({ ok: true });
           break;
         case "GOOGLE_SIGN_IN": {
-          if (typeof FenwickAuth === "undefined" || !FenwickAuth.isConfigured()) {
-            throw new Error("Google sign-in is not configured yet.");
+          if (typeof FenwickAuth === "undefined") {
+            throw new Error("Auth module is unavailable.");
           }
-          const user = await FenwickAuth.signInWithGoogle();
+          if (!(await FenwickAuth.isConfigured())) {
+            throw new Error("Google sign-in is temporarily unavailable.");
+          }
+          const userSession = await FenwickAuth.signInWithGoogle();
           const entitlement = await FenwickAuth.refreshEntitlement();
+          const user = userSession?.user || (await FenwickAuth.getUser(userSession));
           sendResponse({ ok: true, user, entitlement });
+          break;
+        }
+        case "GOOGLE_SIGN_OUT": {
+          await chrome.storage.local.remove(["supabaseSession"]);
+          sendResponse({ ok: true });
+          break;
+        }
+        case "GET_GOOGLE_REDIRECT_URL": {
+          sendResponse({
+            ok: true,
+            redirectUrl:
+              typeof FenwickAuth !== "undefined"
+                ? FenwickAuth.getExtensionRedirectUrl()
+                : "",
+          });
           break;
         }
         case "TEST_UNLOCK_LIFETIME":
         case "UNLOCK_LIFETIME_PRO": {
+          if (typeof FenwickAuth === "undefined") {
+            throw new Error("Auth module is unavailable.");
+          }
+          const session = await FenwickAuth.getSession();
+          if (!session) {
+            throw new Error("Sign in with Google before unlocking Lifetime Pro.");
+          }
+
           const config = globalThis.FENWICK_CONFIG || self.FENWICK_CONFIG;
           const allowLocalUnlock =
             config?.testLifetimeUpgrade !== false &&
@@ -305,17 +368,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             throw new Error("Lifetime Pro unlock is not available in this build.");
           }
 
+          const user = session.user || (await FenwickAuth.getUser(session));
           await chrome.storage.local.set({
             isPro: true,
             entitlementCache: {
               status: "lifetime",
               source: "local_upgrade",
               plan: "lifetime_pro",
+              userId: user?.id || null,
+              email: user?.email || null,
               unlockedAt: Date.now(),
               expiresAt: Date.now() + (3650 * 24 * 60 * 60 * 1000),
             },
           });
-          sendResponse({ ok: true, isPro: true, plan: "Lifetime Pro" });
+          sendResponse({ ok: true, isPro: true, plan: "Lifetime Pro", user });
           break;
         }
         default:

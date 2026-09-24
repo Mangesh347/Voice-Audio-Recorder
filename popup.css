@@ -75,20 +75,21 @@ footer {
 
 .brand-mark {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   place-items: center;
-  border: 1px solid rgba(201, 206, 255, 0.3);
-  border-radius: 50%;
-  background: var(--panel-raised);
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
 }
 
-.brand-mark span {
-  width: 12px;
-  height: 12px;
-  border: 3px solid var(--lavender);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(201, 206, 255, 0.14);
+.brand-mark img,
+.brand-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 
 h1,
@@ -431,28 +432,12 @@ body {
   will-change: transform, border-radius;
 }
 
-.ambient-waves__top {
-  top: -178px;
-  left: 32px;
-  background: linear-gradient(115deg, rgba(29, 139, 231, 0.34), rgba(29, 139, 231, 0.26) 58%, rgba(245, 102, 0, 0.32));
-  animation: wave-drift 8s ease-in-out infinite alternate;
-}
-
-.ambient-waves__middle {
-  top: -214px;
-  left: -258px;
-  width: 560px !important;
-  height: 300px !important;
-  background: rgba(29, 139, 231, 0.46);
-  animation: wave-breathe 10s ease-in-out -3s infinite alternate;
-}
-
 .ambient-waves__bottom {
   bottom: -220px;
   left: -72px;
   width: 520px !important;
   height: 280px !important;
-  background: linear-gradient(105deg, rgba(29, 139, 231, 0.36), rgba(29, 139, 231, 0.24) 58%, rgba(245, 102, 0, 0.34));
+  background: linear-gradient(105deg, rgba(29, 139, 231, 0.36), rgba(29, 139, 231, 0.24) 58%, rgba(255, 104, 0, 0.55));
   animation: wave-drift 9s ease-in-out -4s infinite alternate-reverse;
 }
 
@@ -496,29 +481,22 @@ footer {
 .topbar { margin-bottom: 28px; }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   border: 0;
-  border-radius: 14px;
-  background: #1A1A1A;
-  box-shadow: 0 10px 24px rgba(245, 102, 0, 0.24);
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
 }
 
-.brand-mark span {
-  width: 17px;
-  height: 17px;
-  border: 5px solid white;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
-}
-
+.brand-mark img,
 .brand-mark svg {
-  width: 30px;
-  height: 30px;
+  width: 52px;
+  height: 52px;
+  display: block;
+  object-fit: contain;
 }
-
-.brand-mark .logo-mic { fill: #F56600; }
-.brand-mark .logo-cutout { fill: #1A1A1A; }
-.brand-mark .logo-bolt { fill: #F56600; }
 
 h1 {
   font-size: 16px;
@@ -999,6 +977,63 @@ html[data-theme="dark"] .theme-toggle__moon { color: #1A1A1A; }
 
 .panel-card { overflow: hidden; }
 
+.panel-card--stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.panel-card--stack input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(29, 139, 231, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1A1A1A;
+}
+
+.panel-action {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(0, 191, 255, 0.16);
+  color: #0b5f9a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.panel-action:hover {
+  background: rgba(0, 191, 255, 0.24);
+}
+
+.panel-redirect {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(29, 139, 231, 0.1);
+  color: #0b5f9a;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+html[data-theme="dark"] .panel-card--stack input {
+  border-color: rgba(0, 191, 255, 0.28);
+  background: rgba(22, 18, 30, 0.96);
+  color: #faf6ff;
+}
+
+html[data-theme="dark"] .panel-action {
+  background: rgba(0, 191, 255, 0.2);
+  color: #00BFFF;
+}
+
+html[data-theme="dark"] .panel-redirect {
+  background: rgba(0, 191, 255, 0.12);
+  color: #7adfff;
+}
+
 .panel-row {
   display: flex;
   min-height: 70px;
@@ -1099,7 +1134,7 @@ html[data-theme="dark"] .theme-toggle__moon { color: #1A1A1A; }
 
 .profile-glyph.is-pro,
 .profile-avatar.is-pro {
-  background: linear-gradient(145deg, #F56600, #F56600);
+  background: linear-gradient(145deg, #FFA500, #FFA500);
   box-shadow:
     inset 3px 0 0 #48e9e1,
     inset -3px 0 0 #1D8BE7,
@@ -1244,24 +1279,37 @@ html[data-theme="dark"] .theme-toggle__moon { color: #1A1A1A; }
   top: 50%;
   bottom: auto;
   width: 96px;
+  height: 96px;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0;
   color: #1A1A1A;
   line-height: 1;
   transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .record-orb__label strong,
 .record-orb__label small { display: none; }
 
 .record-logo {
-  width: 54px;
-  height: 54px;
+  width: 72px;
+  height: 72px;
+  display: block;
+  object-fit: contain;
+  overflow: visible;
 }
 
-.record-logo .logo-mic { fill: #F56600; }
-.record-logo .logo-cutout { fill: #f7faff; }
-.record-logo .logo-bolt { fill: #F56600; }
+.record-logo path,
+.record-logo rect {
+  fill: #00BFFF;
+}
+
+.brand-logo path,
+.brand-logo rect {
+  fill: #00BFFF;
+}
 
 .record-orb.is-starting .record-logo { opacity: 0.62; }
 
@@ -1293,28 +1341,25 @@ html[data-theme="dark"] body {
 
 html[data-theme="dark"] .recorder-shell {
   background:
-    radial-gradient(circle at 78% 12%, rgba(245, 102, 0, 0.16), transparent 28%),
-    radial-gradient(circle at 48% 42%, rgba(0, 191, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 78% 12%, rgba(255, 104, 0, 0.24), transparent 28%),
+    radial-gradient(circle at 48% 42%, rgba(0, 191, 255, 0.28), transparent 34%),
     linear-gradient(148deg, #1A1A1A 0%, #1A1A1A 48%, #1A1A1A 100%);
 }
 
-html[data-theme="dark"] .ambient-waves__top {
-  background: linear-gradient(115deg, rgba(0, 191, 255, 0.3), rgba(0, 191, 255, 0.32) 58%, rgba(245, 102, 0, 0.7));
-}
-
-html[data-theme="dark"] .ambient-waves__middle {
-  background: rgba(0, 191, 255, 0.24);
-}
-
 html[data-theme="dark"] .ambient-waves__bottom {
-  background: linear-gradient(105deg, rgba(0, 191, 255, 0.26), rgba(0, 191, 255, 0.3) 58%, rgba(245, 102, 0, 0.72));
+  background: linear-gradient(
+    105deg,
+    rgba(0, 191, 255, 0.42),
+    rgba(0, 191, 255, 0.34) 48%,
+    rgba(255, 104, 0, 0.9)
+  );
 }
 
-html[data-theme="dark"] .music-ribbon__line { opacity: 0.78; }
+html[data-theme="dark"] .music-ribbon__line { opacity: 0.9; }
 html[data-theme="dark"] .music-ribbon__text { fill: #1A1A1A; }
-html[data-theme="dark"] #ribbonGradient stop:nth-child(1) { stop-color: #F56600; }
-html[data-theme="dark"] #ribbonGradient stop:nth-child(2) { stop-color: #F56600; }
-html[data-theme="dark"] #ribbonGradient stop:nth-child(3) { stop-color: #F56600; }
+#ribbonGradient stop:nth-child(1) { stop-color: #FF6800; }
+#ribbonGradient stop:nth-child(2) { stop-color: #FF6800; }
+#ribbonGradient stop:nth-child(3) { stop-color: #FF8533; }
 
 html[data-theme="dark"] #sealGradient stop:nth-child(1) { stop-color: #00BFFF; }
 html[data-theme="dark"] #sealGradient stop:nth-child(2) { stop-color: #00BFFF; }
@@ -1322,8 +1367,8 @@ html[data-theme="dark"] #sealGradient stop:nth-child(3) { stop-color: #00BFFF; }
 
 html[data-theme="dark"] .record-seal {
   filter:
-    drop-shadow(0 0 14px rgba(0, 191, 255, 0.5))
-    drop-shadow(0 12px 20px rgba(0, 191, 255, 0.34));
+    drop-shadow(0 0 16px rgba(0, 191, 255, 0.65))
+    drop-shadow(0 12px 22px rgba(0, 191, 255, 0.42));
 }
 
 html[data-theme="dark"] h1,
@@ -1376,9 +1421,6 @@ html[data-theme="dark"] .record-seal__inner {
 }
 
 html[data-theme="dark"] .record-orb__label { color: #fffaf6; }
-html[data-theme="dark"] .record-logo .logo-mic { fill: #F56600; }
-html[data-theme="dark"] .record-logo .logo-cutout { fill: #1A1A1A; }
-html[data-theme="dark"] .record-logo .logo-bolt { fill: #F56600; }
 html[data-theme="dark"] .usage-strip span { color: #faf6ff; }
 
 html[data-theme="dark"] .profile-glyph { background: #00BFFF; }
@@ -1444,11 +1486,11 @@ html[data-theme="dark"] .profile-avatar::after {
 
 html[data-theme="dark"] .profile-glyph.is-pro,
 html[data-theme="dark"] .profile-avatar.is-pro {
-  background: linear-gradient(145deg, #F56600, #F56600);
+  background: linear-gradient(145deg, #FFA500, #FFA500);
   box-shadow:
-    inset 3px 0 0 #48e9e1,
+    inset 3px 0 0 #00BFFF,
     inset -3px 0 0 #00BFFF,
-    0 8px 24px rgba(245, 102, 0, 0.28);
+    0 8px 24px rgba(255, 165, 0, 0.3);
 }
 
 html[data-theme="dark"] .profile-glyph.is-pro::before,
@@ -1605,7 +1647,7 @@ html[data-theme="dark"] .control-btn--stop {
 }
 
 .usage-card.is-pro .usage-ring {
-  background: conic-gradient(from -90deg, #1D8BE7, #F56600, #1D8BE7);
+  background: conic-gradient(from -90deg, #1D8BE7, #FF6800, #1D8BE7);
 }
 
 .usage-card.is-pro .usage-plan {
@@ -1656,15 +1698,26 @@ button.badge {
 
 .upgrade-dialog__mark {
   display: grid;
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 12px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
   place-items: center;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #F56600, #F56600);
-  color: #ffffff;
-  font-size: 23px;
-  box-shadow: 0 10px 24px rgba(245, 102, 0, 0.24);
+  border-radius: 0;
+  background: transparent;
+  color: #00BFFF;
+  font-size: 0;
+  box-shadow: none;
+}
+
+.upgrade-dialog__mark svg {
+  width: 56px;
+  height: 56px;
+  display: block;
+}
+
+.upgrade-dialog__mark path,
+.upgrade-dialog__mark rect {
+  fill: #00BFFF;
 }
 
 .upgrade-dialog h2 {
@@ -1753,6 +1806,11 @@ button.badge {
   line-height: 1.4;
 }
 
+html[data-theme="dark"] .signal i {
+  color: #00BFFF;
+  background: #00BFFF;
+}
+
 html[data-theme="dark"] .usage-card {
   --usage-card-bg: rgba(30, 25, 40, 0.96);
   border-color: rgba(0, 191, 255, 0.22);
@@ -1762,9 +1820,13 @@ html[data-theme="dark"] .usage-card {
 html[data-theme="dark"] .usage-ring {
   background: conic-gradient(
     from -90deg,
-    #ff6d9d 0deg var(--usage-progress),
+    #00BFFF 0deg var(--usage-progress),
     #3a3344 var(--usage-progress) 360deg
   );
+}
+
+html[data-theme="dark"] .usage-card.is-pro .usage-ring {
+  background: conic-gradient(from -90deg, #00BFFF, #FF6800, #00BFFF);
 }
 
 html[data-theme="dark"] .usage-ring__value strong,
@@ -1811,15 +1873,9 @@ html[data-theme="dark"] .upgrade-dialog li::before { color: #00BFFF; }
 html[data-theme="dark"] .upgrade-price strong { color: #00BFFF; }
 
 html[data-theme="dark"] .brand-mark {
-  background: #1A1A1A;
-  box-shadow:
-    0 0 0 1px rgba(245, 102, 0, 0.22),
-    0 10px 26px rgba(245, 102, 0, 0.28);
+  background: transparent;
+  box-shadow: none;
 }
-
-html[data-theme="dark"] .brand-mark .logo-mic { fill: #F56600; }
-html[data-theme="dark"] .brand-mark .logo-cutout { fill: #1A1A1A; }
-html[data-theme="dark"] .brand-mark .logo-bolt { fill: #F56600; }
 
 @media (prefers-reduced-motion: reduce) {
   .ambient-waves span,
